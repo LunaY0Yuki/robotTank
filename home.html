@@ -1,9 +1,130 @@
+<!DOCTYPE html>
+<html>
 <head>
-    <title>Engineering Robot Tank</title>
-    <!--import Phaser-->
-    <script src="//cdn.jsdelivr.net/npm/phaser@3.0.0/dist/phaser.min.js"></script>
+    <script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
 </head>
+<body>
 
-<body> 
-    <script src = "tankAnimation.js"></script>
+    <script>
+    
+    //initialize the game, set canvas size to 2400 pixels x 1240 pixels (size of the tank pic)
+    var game = new Phaser.Game(2400, 1240, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update});
+
+    function preload() {
+    //load the images
+    game.load.image('tank', 'resources/tank-01.png');
+    game.load.image('robot', 'resources/robot-02.png');
+    game.load.image('bounds', 'resources/platform.png');
+    
+    }
+
+    var robot;
+    var robot2;
+    
+    var topBound;
+    var text;
+    var text2;
+    var transparent = 0;
+    var transparent2 = 0;
+    function create() {
+        //set physics for the animation (allow robot to move at a specic speed)
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+    
+        game.add.image(0, 0, 'tank'); //create the background
+        
+        //create the top bound for the robot to collide with
+        topBound = game.add.sprite(0,140,'bounds');
+        game.physics.enable(topBound, Phaser.Physics.ARCADE);
+        topBound.body.immovable = true; //make sure the bound doesn't move
+        topBound.alpha = 0; //make the bound transparent
+        
+        //create the robot at 400 x 400 (location) on canvas
+        robot = game.add.sprite(400,400,'robot');
+        game.physics.enable(robot, Phaser.Physics.ARCADE);
+        robot.body.velocity.setTo(-600, 400); //how fast the robot is moving (x direction, y direction)
+        robot.body.bounce.set(1); //robot can bounce back after hitting the bounds
+        robot.body.collideWorldBounds = true;
+
+        //create the robot at 400 x 400 (location) on canvas
+        robot2 = game.add.sprite(400,400,'robot');
+        game.physics.enable(robot2, Phaser.Physics.ARCADE);
+        robot2.body.velocity.setTo(-350, 500); //how fast the robot is moving (x direction, y direction)
+        robot2.body.bounce.set(1); //robot can bounce back after hitting the bounds
+        robot2.body.collideWorldBounds = true;
+        
+        
+        //make the robot clickable
+        robot.inputEnabled = true;
+        //when it's clicked, call the function "display"
+        robot.events.onInputDown.add(display);
+
+        //make the robot clickable
+        robot2.inputEnabled = true;
+        //when it's clicked, call the function "display"
+        robot2.events.onInputDown.add(display2);
+        
+        //style for the name
+        var style = { font: "75px Arial", fill: "#191970", wordWrap: true, wordWrapWidth: robot.width, align: "center", backgroundColor: "#FFFFFF"};
+        //create the name of the sponsor
+        text = game.add.text(0,0,"Name",style);
+        text.anchor.set(0.5);
+        text.alpha = transparent;//initialize it as transparent
+        var style2 = { font: "75px Arial", fill: "#191970", wordWrap: true, wordWrapWidth: robot2.width, align: "center", backgroundColor: "#FFFFFF"};
+        text2 = game.add.text(0,0,"Name2",style2);
+        text2.anchor.set(0.5);
+        text2.alpha = transparent2;//initialize it as transparent
+    }
+
+    function update() {
+        //make the robot collide with the top bound we created
+        game.physics.arcade.collide(robot,topBound);
+        game.physics.arcade.collide(robot2,topBound);
+        //game.physics.arcade.collide(robot,robot2);
+        //call the function to make the text follow the robot
+        follow(text);
+        follow2(text2);
+    }
+
+    function display (){
+        //if the robot is clicked...
+        if (transparent == 0){
+            //if the name is not shown, show the name
+            transparent = 0.8;
+            text.alpha = transparent;
+        }
+        else{
+            //if the name is shown, hide the name
+            transparent = 0;
+            text.alpha = transparent;
+        }
+    }
+
+    function display2 (){
+        //if the robot is clicked...
+        if (transparent2 == 0){
+            //if the name is not shown, show the name
+            transparent2 = 0.8;
+            text2.alpha = transparent2;
+        }
+        else{
+            //if the name is shown, hide the name
+            transparent2 = 0;
+            text2.alpha = transparent2;
+        }
+    }
+    
+    function follow(name){
+        //this function make the name follow the robot
+        name.x = Math.floor(robot.x + robot.width / 2);
+        name.y = Math.floor(robot.y + robot.height / 2);
+    }
+
+    function follow2(name){
+        //this function make the name follow the robot
+        name.x = Math.floor(robot2.x + robot2.width / 2);
+        name.y = Math.floor(robot2.y + robot2.height / 2);
+    }
+    </script>
+
 </body>
+</html>
